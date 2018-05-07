@@ -1,4 +1,4 @@
-#Install Guide - Opportunity Content Folder
+# Install Guide - Opportunity Content Folder
 This guide will show how to install the Opportunity Folder Content workflow into your salesforce account. This guide is assuming you have already installed the Box for Salesforce integration as well as the unmanaged package provided by demo engineering.
 
 **Workflow Description:**

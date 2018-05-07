@@ -1,4 +1,4 @@
-#Install Guide - Invite Collaborator
+# Install Guide - Invite Collaborator
 This guide will show how to install the Invite Collaborator workflow into your salesforce account. This guide is assuming you have already installed the Box for Salesforce integration as well as the unmanaged package provided by demo engineering. You will need to have a Box widget embedded in the opportunity page for this to work.
 
 **Workflow Description:**
