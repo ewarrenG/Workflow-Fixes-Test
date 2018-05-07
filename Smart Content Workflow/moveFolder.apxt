@@ -1,0 +1,16 @@
+trigger moveFolder on Opportunity (after update) {
+    Set<Id> oppId = trigger.newmap.keySet();
+    list<Id> subfolders = new list<Id>(trigger.newmap.keySet());
+    
+    //query for name, id, and competitors attribute from opportunity
+    Opportunity op = [SELECT Name, id, Competitors__c  FROM Opportunity WHERE id=:oppId];
+ 
+    //call competiton method - this returns the id of the competitor folder
+	String comp = BoxUtil.competition(op.Competitors__c);
+    tokens__c myTokens = [SELECT refresh__c, access__c FROM Tokens__c];
+    String token = myTokens.access__c;
+    
+    //call cpyFolder method, this function returns nothing. It moves the competition
+    //folder into the newly created opportunity folder
+    BoxUtil.cpyFolder(subfolders, token, comp);
+}

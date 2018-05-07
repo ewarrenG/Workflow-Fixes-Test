@@ -1,0 +1,15 @@
+//Trigger to get Opportunity stage name, call functions from BoxUtilOpp class to get correct folder ID to copy in, and also copy the folder
+
+trigger OppUpdate on Opportunity (after update) {
+    Set<Id> oppId = trigger.newmap.keySet();
+    list<Id> subfolders = new list<Id>(trigger.newmap.keySet());
+    
+    Opportunity op = [select id, name, StageName from Opportunity where id=:oppId];
+    system.debug('Opp: ' + op);
+    
+    //Return the folder ID that should be copied over based on stagename
+    String oppFolder = BoxUtilOpp.competition(op.StageName);
+    tokens__c myTokens = [SELECT refresh__c, access__c FROM Tokens__c];
+    String token = myTokens.access__c;
+    BoxUtilOpp.cpyFolder(subfolders, token, oppFolder);
+}

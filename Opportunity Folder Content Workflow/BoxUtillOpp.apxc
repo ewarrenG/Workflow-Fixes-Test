@@ -1,0 +1,65 @@
+//APEX class that handles copying folder and translating opportunity stage name into correct FolderID
+
+public with sharing class BoxUtilOpp {
+    
+    @future(callout=true)
+    public static void cpyFolder(list<Id> idList, String accessToken, String folderId){
+        String authorizationHeader = 'Bearer ' + accessToken;
+        String BoxJSON = '';
+        String currFolder = '';
+        
+        //create new instance of the Box.Toolkit object
+        Box.Toolkit boxToolkit = new Box.Toolkit();
+        for(Id i : idList){
+             //create Box folder for the new created opportunity in Salesforce
+             currFolder = boxToolkit.createFolderForRecordId(i, null, true);
+        }
+            
+        //create request to server to COPY folder
+        HttpRequest reqCpy = new HttpRequest();
+        reqCpy.setMethod('POST');
+        String endpointCreate = 'https://api.box.com/2.0/folders/' + folderId + '/copy';
+        reqCpy.setEndpoint(endpointCreate);
+        reqCpy.setHeader('Authorization', authorizationHeader);
+        reqCpy.setBody('{"parent": {"id" :' + currFolder + '}}');
+        
+        //create HTTP request for COPY
+        Http httpCreate = new Http();
+        Boolean successCreate = false;
+        System.debug('Create Request : ' + reqCpy);
+        System.debug('Create Request body: ' + reqCpy.getBody());
+
+        //keep trying
+        while (successCreate == false){
+            try{
+                HTTPResponse resCreate = httpCreate.send(reqCpy);
+                //save json response to BoxJSON, parse JSON
+                BoxJSON = resCreate.getBody();
+                System.debug('Create folder response: ' + BoxJSON);
+                successCreate = true;
+            }
+            catch (System.Exception e){
+                System.debug('Error creating folder: ' + string.valueof(e));
+            }
+        }
+    }
+
+    //this method returns the id of the selected competitor, currently it matches
+    //by name 
+    public static String competition(String name){
+        String id = '';
+        if(name == 'Prospecting'){
+            id = '47757509565';
+        } else if(name == 'Qualification'){
+            id = '47758452647';
+        } else if(name == 'Needs Analysis'){
+            id = '47758402214';
+        } else if(name == 'Value Proposition'){
+            id = '47757580443';
+        } else{
+            id = '47757580443';
+        }
+        System.debug('ID HERE: ' + id);
+        return id;
+    }
+}

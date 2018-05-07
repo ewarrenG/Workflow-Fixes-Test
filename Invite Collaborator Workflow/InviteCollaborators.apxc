@@ -1,0 +1,68 @@
+public with sharing class InviteCollaborators {
+    static String collabTeamId = '';
+    static String folderID = '';
+    
+    
+    
+    public static void handleCollaborator(list<Id> idList){
+        Box.Toolkit boxToolkit = new Box.Toolkit();
+        tokens__c myTokens = [SELECT refresh__c, access__c FROM Tokens__c];
+    	String token = myTokens.access__c;
+        
+        
+        Opportunity op = [SELECT Name, id, Vertical_Team_Resources__c FROM Opportunity WHERE id=:idList[0]]; 
+    	
+    	collabTeamId = InviteCollaborators.getCollaborator(op.Vertical_Team_Resources__c);
+        folderId = boxToolkit.getFolderIdByRecordId(op.Id);
+        InviteCollaborators.createCollaboration(collabTeamId, folderId, token);
+        
+    	System.debug('TEAM RESOURCE: ' + collabTeamId);
+    }
+    
+    
+    public static String getCollaborator(String name){
+        
+        if(name == 'Marketing Tean'){
+            return '424210';
+        } else if ( name == 'Legal Team'){
+            return '425414';
+        } else{
+            return '424484'; 
+        }
+    }
+    
+    @future(callout=true)
+    public static void createCollaboration(String groupId, String folder, String accessToken){
+        String authorizationHeader = 'Bearer ' + accessToken;
+        String BoxJSON = '';
+        
+        //create request to server to COPY folder
+        HttpRequest reqCpy = new HttpRequest();
+        reqCpy.setMethod('POST');
+        String endpointCreate = 'https://api.box.com/2.0/collaborations';
+        reqCpy.setEndpoint(endpointCreate);
+        reqCpy.setHeader('Authorization', authorizationHeader);
+        reqCpy.setBody('{"item": { "id": '+ folder +', "type": "folder"}, "accessible_by": { "id": '+ groupId +', "type": "group" }, "role": "editor"}');
+        
+        //create HTTP request for COPY
+        Http httpCreate = new Http();
+        Boolean successCreate = false;
+        System.debug('Create Request : ' + reqCpy);
+        System.debug('Create Request body: ' + reqCpy.getBody());
+
+        //keep trying
+        while (successCreate == false){
+            try{
+                HTTPResponse resCreate = httpCreate.send(reqCpy);
+                //save json response to BoxJSON, parse JSON
+                BoxJSON = resCreate.getBody();
+                System.debug('Create folder response: ' + BoxJSON);
+                successCreate = true;
+            }
+            catch (System.Exception e){
+                System.debug('Error creating folder: ' + string.valueof(e));
+            }
+        }
+    }
+
+}

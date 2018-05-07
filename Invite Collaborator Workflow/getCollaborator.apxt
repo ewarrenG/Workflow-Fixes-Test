@@ -1,0 +1,5 @@
+trigger getCollaborator on Opportunity (after update) {    
+    if(trigger.newmap.size()==1){
+        InviteCollaborators.handleCollaborator(new list<id>(trigger.newmap.keySet()));
+    }
+}
