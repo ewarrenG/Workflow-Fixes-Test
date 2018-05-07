@@ -3,7 +3,7 @@ This guide will show how to install the Create Opportunity Under Opportunity wor
 
 You will also need to have the managed package widgets embedded into the Opportunity and Account pages to create the folders that will be used in this workflow. The managed package install guide walks you through how to do this.
 
-# Workflow description:
+**Workflow description:**
 This workflow will allow the user to automatically have a Box folder created and nested inside of the account which the opportunity is associated with. This should help show that it will be easier to keep track of opportunities associated with accounts more easily by using the integration.
 
 **Step One:**
