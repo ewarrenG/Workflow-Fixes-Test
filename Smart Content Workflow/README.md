@@ -1,5 +1,4 @@
 #Install Guide - Smart Content
-
 This guide will show how to install the Smart Content workflow into your salesforce account. This guide is assuming you have already installed the Box for Salesforce integration as well as the unmanaged package provided by demo engineering.
 
 **Workflow Description:**
